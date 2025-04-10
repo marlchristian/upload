@@ -1,0 +1,49 @@
+using Microsoft.AspNetCore.Mvc;
+using YourNamespace.Models;
+using System.Collections.Generic;
+using System.Linq;
+
+public class ScanController : Controller
+{
+    private readonly AppDbContext _context;
+
+    public ScanController(AppDbContext context)
+    {
+        _context = context;
+    }
+
+    [HttpGet]
+    public IActionResult Index() => View();
+
+    [HttpPost]
+    public IActionResult Submit(string userName, string locationCode, string areaCode, string bayCode, string stationCode, List<string> assetCodes)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.Name == userName) ?? new User { Name = userName };
+        _context.Users.Attach(user);
+
+        var location = _context.Locations.FirstOrDefault(l => l.LocationCode == locationCode);
+        var area = _context.Areas.FirstOrDefault(a => a.AreaCode == areaCode);
+        var submission = new Submission { User = user };
+
+        _context.Submissions.Add(submission);
+        _context.SaveChanges();
+
+        foreach (var code in assetCodes)
+        {
+            var asset = _context.Assets.FirstOrDefault(a => a.AssetCode == code);
+            if (asset != null)
+            {
+                _context.SubmissionAssets.Add(new SubmissionAsset
+                {
+                    SubmissionId = submission.Id,
+                    AssetId = asset.Id
+                });
+            }
+        }
+
+        _context.SaveChanges();
+        return RedirectToAction("Success");
+    }
+
+    public IActionResult Success() => View();
+}
