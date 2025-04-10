@@ -1,0 +1,80 @@
+@{
+    ViewData["Title"] = "Scan Assets";
+}
+
+<h2>Step-by-Step Asset Scanner</h2>
+
+<form method="post" asp-action="Submit">
+    <div>
+        <label>Name:</label>
+        <input type="text" name="userName" required />
+    </div>
+
+    <div>
+        <label>Scan Location QR:</label>
+        <div id="location-reader"></div>
+        <input type="text" id="locationCode" name="locationCode" readonly />
+    </div>
+
+    <div>
+        <label>Scan Area QR:</label>
+        <div id="area-reader"></div>
+        <input type="text" id="areaCode" name="areaCode" readonly />
+    </div>
+
+    <div>
+        <label>Bay (Optional):</label>
+        <input type="text" name="bayCode" />
+    </div>
+
+    <div>
+        <label>Station (Optional):</label>
+        <input type="text" name="stationCode" />
+    </div>
+
+    <div>
+        <label>Scan Assets:</label>
+        <div id="asset-reader"></div>
+        <input type="hidden" id="assetCodes" name="assetCodes" />
+        <ul id="asset-list"></ul>
+    </div>
+
+    <button type="submit">Submit</button>
+</form>
+
+@section Scripts {
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+        const assetCodes = [];
+
+        function startScanner(id, callback) {
+            const reader = new Html5Qrcode(id);
+            reader.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: 250 },
+                qrCodeMessage => {
+                    callback(qrCodeMessage);
+                    reader.stop();
+                }
+            ).catch(err => console.error(err));
+        }
+
+        startScanner("location-reader", code => {
+            document.getElementById("locationCode").value = code;
+        });
+
+        startScanner("area-reader", code => {
+            document.getElementById("areaCode").value = code;
+        });
+
+        startScanner("asset-reader", code => {
+            if (!assetCodes.includes(code)) {
+                assetCodes.push(code);
+                document.getElementById("assetCodes").value = JSON.stringify(assetCodes);
+                const li = document.createElement("li");
+                li.textContent = code;
+                document.getElementById("asset-list").appendChild(li);
+            }
+        });
+    </script>
+}
