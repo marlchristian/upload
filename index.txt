@@ -1,29 +1,35 @@
 @{
-    ViewDa
+    ViewData["Title"] = "QR Form";
+}
+
 <style>
+    /* Make sure the body and html take the full height */
     body, html {
         height: 100%;
         margin: 0;
     }
 
+    /* Create a container to center the form */
     .center-container {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
+        justify-content: center; /* Center horizontally */
+        align-items: center;     /* Center vertically */
+        height: 100vh;           /* Full height of the viewport */
     }
 
+    /* Styling the form */
     form {
+        width: 100%;
+        max-width: 600px; /* Max width of the form */
         padding: 20px;
         border: 1px solid #ccc;
         border-radius: 8px;
         background-color: #f9f9f9;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        width: 400px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     form div {
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
 
     label {
@@ -33,7 +39,7 @@
 
     input[type="text"], input[type="hidden"] {
         width: 100%;
-        padding: 6px;
+        padding: 8px;
         box-sizing: border-box;
     }
 
@@ -43,6 +49,7 @@
     }
 </style>
 
+<!-- Centered form container -->
 <div class="center-container">
     <form method="post" asp-action="Submit">
         <div>
@@ -63,27 +70,4 @@
         </div>
 
         <div>
-            <label>Bay (Optional):</label>
-            <input type="text" name="bayCode" />
-        </div>
-
-        <div>
-            <label>Station (Optional):</label>
-            <input type="text" name="stationCode" />
-        </div>
-
-        <div>
-            <label>Scan Assets:</label>
-            <div id="asset-reader"></div>
-            <input type="hidden" id="assetCodes" name="assetCodes" />
-            <ul id="asset-list"></ul>
-        </div>
-
-        <button type="submit">Submit</button>
-    </form>
-</div>
-
-You can also move the CSS into your site.css or another stylesheet and just reference the class names.
-
-Let me know if you’re using a specific layout file (like _Layout.cshtml) and want to center it within a section instead!
-
+            <
