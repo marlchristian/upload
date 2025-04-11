@@ -95,3 +95,69 @@
 </html>
 
 Method 'Identifier' in type 'Microsoft.EntityFrameworkCore.Design.Internal.CSharpHelper' from assembly 'Microsoft.EntityFrameworkCore.Design, Version=8.0.11.0, Culture=neutral, PublicKeyToken=adb9793829ddae60' does not have an implementation.
+
+@model QrFormApp.Models.QrForm
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>QR Form</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Location" class="control-label"></label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Area" class="control-label"></label>
+                <input asp-for="Area" class="form-control" />
+                <span asp-validation-for="Area" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Bay" class="control-label"></label>
+                <input asp-for="Bay" class="form-control" />
+                <span asp-validation-for="Bay" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Station" class="control-label"></label>
+                <input asp-for="Station" class="form-control" />
+                <span asp-validation-for="Station" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Assets" class="control-label"></label>
+                <input asp-for="Assets" class="form-control" />
+                <span asp-validation-for="Assets" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-2">
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
