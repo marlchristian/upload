@@ -1,11 +1,50 @@
-SqlException: Cannot open database "QrFormDb" requested by the login. The login failed.
-Login failed for user 'ACSPRO\MCPASCUAL'.
-Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, bool breakConnection, Action<Action> wrapCloseInAction)
+@model QrForm
 
-InvalidOperationException: An exception has been raised that is likely due to a transient failure. Consider enabling transient error resiliency by adding 'EnableRetryOnFailure' to the 'UseSqlServer' call.
-Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync<TState, TResult>(TState state, Func<DbContext, TState, CancellationToken, Task<TResult>> operation, Func<DbContext, TState, CancellationToken, Task<ExecutionResult<TResult>>> verifySucceeded, CancellationToken cancellationToken)
+<form asp-action="Create" method="post">
+    <div>
+        <label>Name</label>
+        <input asp-for="Name" />
+    </div>
+    <div>
+        <label>Location</label>
+        <input asp-for="Location" />
+    </div>
+    <div>
+        <label>Area</label>
+        <input asp-for="Area" />
+    </div>
+    <div>
+        <label>Bay</label>
+        <input asp-for="Bay" />
+    </div>
+    <div>
+        <label>Station</label>
+        <input asp-for="Station" />
+    </div>
 
-Method 'Identifier' in type 'Microsoft.EntityFrameworkCore.Design.Internal.CSharpHelper' from assembly 'Microsoft.EntityFrameworkCore.Design, Version=8.0.11.0, Culture=neutral, PublicKeyToken=adb9793829ddae60' does not have an implementation.
+    <div id="assetsContainer">
+        <label>Assets</label>
+        <input name="Assets[0]" class="form-control" />
+    </div>
+    <button type="button" onclick="addAssetInput()">Add Asset</button>
+
+    <button type="submit">Submit</button>
+</form>
+
+@section Scripts {
+    <script>
+        let assetIndex = 1;
+
+        function addAssetInput() {
+            const container = document.getElementById("assetsContainer");
+            const input = document.createElement("input");
+            input.name = `Assets[${assetIndex}]`;
+            input.className = "form-control";
+            container.appendChild(input);
+            assetIndex++;
+        }
+    </script>
+}
 
 <!DOCTYPE html>
 <html>
