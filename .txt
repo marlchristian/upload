@@ -1,93 +1,59 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using YourProjectNamespace.Data; // Replace with your actual namespace
-using YourProjectNamespace.Models; // Replace with your actual namespace
+index
+@model IEnumerable<QrForm>
 
-namespace YourProjectNamespace.Controllers
-{
-    public class QrFormsController : Controller
-    {
-        private readonly ApplicationDbContext _context;
-
-        public QrFormsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        // GET: QrForms
-        public async Task<IActionResult> Index()
-        {
-            var forms = await _context.QrForms.ToListAsync();
-            return View(forms);
-        }
-
-        // GET: QrForms/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: QrForms/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(QrForm form)
-        {
-            if (ModelState.IsValid)
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Assets</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+    <tr>
+        <td>@item.Name</td>
+        <td>@item.Location</td>
+        <td>
+            @if (item.Assets != null && item.Assets.Any())
             {
-                _context.Add(form);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                <ul>
+                    @foreach (var asset in item.Assets)
+                    {
+                        <li>@asset</li>
+                    }
+                </ul>
             }
-            return View(form);
-        }
-
-        // GET: QrForms/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var form = await _context.QrForms
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (form == null)
-                return NotFound();
-
-            return View(form);
-        }
-
-        // GET: QrForms/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var form = await _context.QrForms
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (form == null)
-                return NotFound();
-
-            return View(form);
-        }
-
-        // POST: QrForms/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var form = await _context.QrForms.FindAsync(id);
-            if (form != null)
+            else
             {
-                _context.QrForms.Remove(form);
-                await _context.SaveChangesAsync();
+                <em>No assets</em>
             }
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool QrFormExists(int id)
-        {
-            return _context.QrForms.Any(e => e.Id == id);
-        }
-    }
+        </td>
+        <td>
+            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+        </td>
+    </tr>
 }
+    </tbody>
+</table>
+
+details
+@model QrForm
+
+<h2>Details</h2>
+<div>
+    <p><strong>Name:</strong> @Model.Name</p>
+    <p><strong>Location:</strong> @Model.Location</p>
+    <p><strong>Assets:</strong></p>
+    <ul>
+        @foreach (var asset in Model.Assets)
+        {
+            <li>@asset</li>
+        }
+    </ul>
+</div>
+
+<a asp-action="Index">Back to List</a>
+
