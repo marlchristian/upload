@@ -1,59 +1,46 @@
-index
-@model IEnumerable<QrForm>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Location</th>
-            <th>Assets</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-    <tr>
-        <td>@item.Name</td>
-        <td>@item.Location</td>
-        <td>
-            @if (item.Assets != null && item.Assets.Any())
-            {
-                <ul>
-                    @foreach (var asset in item.Assets)
-                    {
-                        <li>@asset</li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <em>No assets</em>
-            }
-        </td>
-        <td>
-            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-        </td>
-    </tr>
-}
-    </tbody>
-</table>
-
-details
 @model QrForm
 
-<h2>Details</h2>
-<div>
-    <p><strong>Name:</strong> @Model.Name</p>
-    <p><strong>Location:</strong> @Model.Location</p>
-    <p><strong>Assets:</strong></p>
-    <ul>
-        @foreach (var asset in Model.Assets)
-        {
-            <li>@asset</li>
+<h2>Edit</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Location"></label>
+        <input asp-for="Location" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Assets</label>
+        <div id="assetsContainer">
+            @for (int i = 0; i < Model.Assets.Count; i++)
+            {
+                <input name="Assets[@i]" value="@Model.Assets[i]" class="form-control mb-1" />
+            }
+        </div>
+        <button type="button" onclick="addAssetInput()">+ Add Asset</button>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Save</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Cancel</a>
+</form>
+
+@section Scripts {
+    <script>
+        let assetIndex = @Model.Assets.Count;
+        function addAssetInput() {
+            const container = document.getElementById("assetsContainer");
+            const input = document.createElement("input");
+            input.name = `Assets[${assetIndex}]`;
+            input.className = "form-control mb-1";
+            input.placeholder = "Enter new asset";
+            container.appendChild(input);
+            assetIndex++;
         }
-    </ul>
-</div>
-
-<a asp-action="Index">Back to List</a>
-
+    </script>
+}
