@@ -76,4 +76,18 @@ namespace YourProjectNamespace.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var form = await
+            var form = await _context.QrForms.FindAsync(id);
+            if (form != null)
+            {
+                _context.QrForms.Remove(form);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool QrFormExists(int id)
+        {
+            return _context.QrForms.Any(e => e.Id == id);
+        }
+    }
+}
