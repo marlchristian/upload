@@ -1,211 +1,79 @@
-@model QrForm
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using YourProjectNamespace.Data; // Replace with your actual namespace
+using YourProjectNamespace.Models; // Replace with your actual namespace
 
-<form asp-action="Create" method="post">
-    <div>
-        <label>Name</label>
-        <input asp-for="Name" />
-    </div>
-    <div>
-        <label>Location</label>
-        <input asp-for="Location" />
-    </div>
-    <div>
-        <label>Area</label>
-        <input asp-for="Area" />
-    </div>
-    <div>
-        <label>Bay</label>
-        <input asp-for="Bay" />
-    </div>
-    <div>
-        <label>Station</label>
-        <input asp-for="Station" />
-    </div>
+namespace YourProjectNamespace.Controllers
+{
+    public class QrFormsController : Controller
+    {
+        private readonly ApplicationDbContext _context;
 
-    <div id="assetsContainer">
-        <label>Assets</label>
-        <input name="Assets[0]" class="form-control" />
-    </div>
-    <button type="button" onclick="addAssetInput()">Add Asset</button>
-
-    <button type="submit">Submit</button>
-</form>
-
-@section Scripts {
-    <script>
-        let assetIndex = 1;
-
-        function addAssetInput() {
-            const container = document.getElementById("assetsContainer");
-            const input = document.createElement("input");
-            input.name = `Assets[${assetIndex}]`;
-            input.className = "form-control";
-            container.appendChild(input);
-            assetIndex++;
+        public QrFormsController(ApplicationDbContext context)
+        {
+            _context = context;
         }
-    </script>
-}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>QR Form Scanner</title>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-</head>
-<body>
-    <h2>QR Form Scanner</h2>
+        // GET: QrForms
+        public async Task<IActionResult> Index()
+        {
+            var forms = await _context.QrForms.ToListAsync();
+            return View(forms);
+        }
 
-    <label>Name: <input type="text" id="userName"></label><br><br>
+        // GET: QrForms/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-    <div id="stepDisplay">Step: Scan Location</div>
-    <div id="qr-reader" style="width: 300px;"></div>
-
-    <button onclick="submitData()" style="display:none;" id="submitBtn">Submit</button>
-
-    <script>
-        let step = 0;
-        const data = {
-            name: '',
-            location: '',
-            area: '',
-            bay: null,
-            station: null
-        };
-
-        const stepDisplay = document.getElementById('stepDisplay');
-        const submitBtn = document.getElementById('submitBtn');
-
-        const steps = [
-            { key: 'location', text: 'Scan Location' },
-            { key: 'area', text: 'Scan Area' },
-            { key: 'bay', text: 'Scan Bay (Optional)' },
-            { key: 'station', text: 'Scan Station (Optional if Bay scanned)' }
-        ];
-
-        function onScanSuccess(decodedText) {
-            const key = steps[step].key;
-            data[key] = decodedText;
-            console.log(`Step ${step + 1}: ${key} = ${decodedText}`);
-
-            if (key === 'bay' && !decodedText) {
-                data.station = null;
-                step += 2;
-                finish();
-                return;
+        // POST: QrForms/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(QrForm form)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(form);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-
-            if (key === 'station' || step >= steps.length - 1) {
-                finish();
-                return;
-            }
-
-            step++;
-            stepDisplay.innerText = `Step: ${steps[step].text}`;
-
-            html5QrCode.stop().then(() => startScanner());
+            return View(form);
         }
 
-        function startScanner() {
-            html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                onScanSuccess
-            );
+        // GET: QrForms/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var form = await _context.QrForms
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (form == null)
+                return NotFound();
+
+            return View(form);
         }
 
-        function finish() {
-            stepDisplay.innerText = 'Done! Click Submit';
-            submitBtn.style.display = 'inline-block';
+        // GET: QrForms/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var form = await _context.QrForms
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (form == null)
+                return NotFound();
+
+            return View(form);
         }
 
-        function submitData() {
-            data.name = document.getElementById('userName').value;
-
-            fetch('/api/qrform', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(res => {
-                if (res.ok) {
-                    alert('Data saved!');
-                    location.reload();
-                } else {
-                    alert('Failed to save data.');
-                }
-            });
-        }
-
-        const html5QrCode = new Html5Qrcode("qr-reader");
-        startScanner();
-    </script>
-</body>
-</html>
-
-Method 'Identifier' in type 'Microsoft.EntityFrameworkCore.Design.Internal.CSharpHelper' from assembly 'Microsoft.EntityFrameworkCore.Design, Version=8.0.11.0, Culture=neutral, PublicKeyToken=adb9793829ddae60' does not have an implementation.
-
-@model QrFormApp.Models.QrForm
-
-@{
-    ViewData["Title"] = "Create";
-}
-
-<h1>Create</h1>
-
-<h4>QR Form</h4>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Location" class="control-label"></label>
-                <input asp-for="Location" class="form-control" />
-                <span asp-validation-for="Location" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Area" class="control-label"></label>
-                <input asp-for="Area" class="form-control" />
-                <span asp-validation-for="Area" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Bay" class="control-label"></label>
-                <input asp-for="Bay" class="form-control" />
-                <span asp-validation-for="Bay" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Station" class="control-label"></label>
-                <input asp-for="Station" class="form-control" />
-                <span asp-validation-for="Station" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Assets" class="control-label"></label>
-                <input asp-for="Assets" class="form-control" />
-                <span asp-validation-for="Assets" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-3">
-                <input type="submit" value="Submit" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="mt-2">
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+        // POST: QrForms/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var form = await
