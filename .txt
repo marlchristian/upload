@@ -1,3 +1,5 @@
+Unable to create a 'DbContext' of type 'RuntimeType'. The exception 'Method 'get_LockReleaseBehavior' in type 'Microsoft.EntityFrameworkCore.SqlServer.Migrations.Internal.SqlServerHistoryRepository' from assembly 'Microsoft.EntityFrameworkCore.SqlServer, Version=8.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60' does not have an implementation.' was thrown while attempting to create an instance. For the different patterns supported at design time, see https://go.microsoft.com/fwlink/?linkid=851728
+
 Method 'Identifier' in type 'Microsoft.EntityFrameworkCore.Design.Internal.CSharpHelper' from assembly 'Microsoft.EntityFrameworkCore.Design, Version=8.0.11.0, Culture=neutral, PublicKeyToken=adb9793829ddae60' does not have an implementation.
 
 <!DOCTYPE html>
