@@ -1,1 +1,95 @@
-uploads
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Form Scanner</title>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+    <h2>QR Form Scanner</h2>
+
+    <label>Name: <input type="text" id="userName"></label><br><br>
+
+    <div id="stepDisplay">Step: Scan Location</div>
+    <div id="qr-reader" style="width: 300px;"></div>
+
+    <button onclick="submitData()" style="display:none;" id="submitBtn">Submit</button>
+
+    <script>
+        let step = 0;
+        const data = {
+            name: '',
+            location: '',
+            area: '',
+            bay: null,
+            station: null
+        };
+
+        const stepDisplay = document.getElementById('stepDisplay');
+        const submitBtn = document.getElementById('submitBtn');
+
+        const steps = [
+            { key: 'location', text: 'Scan Location' },
+            { key: 'area', text: 'Scan Area' },
+            { key: 'bay', text: 'Scan Bay (Optional)' },
+            { key: 'station', text: 'Scan Station (Optional if Bay scanned)' }
+        ];
+
+        function onScanSuccess(decodedText) {
+            const key = steps[step].key;
+            data[key] = decodedText;
+            console.log(`Step ${step + 1}: ${key} = ${decodedText}`);
+
+            if (key === 'bay' && !decodedText) {
+                data.station = null;
+                step += 2;
+                finish();
+                return;
+            }
+
+            if (key === 'station' || step >= steps.length - 1) {
+                finish();
+                return;
+            }
+
+            step++;
+            stepDisplay.innerText = `Step: ${steps[step].text}`;
+
+            html5QrCode.stop().then(() => startScanner());
+        }
+
+        function startScanner() {
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                onScanSuccess
+            );
+        }
+
+        function finish() {
+            stepDisplay.innerText = 'Done! Click Submit';
+            submitBtn.style.display = 'inline-block';
+        }
+
+        function submitData() {
+            data.name = document.getElementById('userName').value;
+
+            fetch('/api/qrform', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => {
+                if (res.ok) {
+                    alert('Data saved!');
+                    location.reload();
+                } else {
+                    alert('Failed to save data.');
+                }
+            });
+        }
+
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        startScanner();
+    </script>
+</body>
+</html>
